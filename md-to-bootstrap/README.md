@@ -34,10 +34,12 @@ In a perfect solution, only a few sections like :::carousel or :::quiz should be
   * all the other paragraphs or content
 
 ```
-# title
-Lead text
----
-Description
+::: jumbotron
+# Title of the jumbotron
+Lead text for this header block
+
+Description part for this jumbotron
+:::
 ```
 
 ## Alerts
