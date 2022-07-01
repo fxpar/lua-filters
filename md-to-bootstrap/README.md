@@ -42,12 +42,24 @@ Description part for this jumbotron
 :::
 ```
 
+Becomes
+
+```
+<div class="jumbotron">
+  <h1 class="display-4">Title of the jumbotron</h1>
+  <p class="lead">Lead text for this header block</p>
+  <hr class="my-4">
+  <p>Description part for this jumbotron</p>
+</div>
+```
+
+
 ## Alerts
 * Sections called info, warning, danger... 
 * Should be rendered as alerts
 
 ```
-:::danger
+::: danger
 You must do this to be safe
 :::
 ```
@@ -61,9 +73,9 @@ A section called card with some paragraph are turned into a card. The paragraphs
 The card section can have a nested header section and or a nested footer section with some paragraphs.
 
 ```
-:::card
+::: card
 
-:::header (optional)
+::: header (optional)
 text of the header
 :::
 
