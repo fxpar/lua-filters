@@ -126,31 +126,116 @@ A section called carousel with multiple Headers should be converted into a carou
 The text can be cards of other component nested.
 
 ```
-::: carousel
+::: carousel carouselId
 
 # first slide
-Some text
+Content of first slide
 
 # Second slide
-Some text
+Content of second slide
+
+# Third slide
+Content of third slide
 
 :::
 
 ```
+
+
+Becomes
+
+```
+<div id="carouselId" class="carousel slide" data-ride="carousel">
+  <div class="carousel-inner">
+    <div class="carousel-item active">
+      Content of first slide (including title)
+    </div>
+    <div class="carousel-item">
+      Content of second slide (including title)
+    </div>
+    <div class="carousel-item">
+      Content of Third slide (including title)
+    </div>
+  </div>
+  <a class="carousel-control-prev" href="#carouselId" role="button" data-slide="prev">
+    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="carousel-control-next" href="#carouselId" role="button" data-slide="next">
+    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div>
+```
+
 
 ## Accordion
 A section called accordion with multiple Headers and text should be converted into collapsible accordion, each header becoming the toglle link name.
 
 ```
-::: accordion
+::: accordion accordionId
 
 # first toggle link
-Some text
+First toggle content
 
 # Second toggle link
-Some text
+Second toggle content
+
+# Third toggle link
+Third toggle content
 
 :::
+
+```
+
+
+
+```
+<div id="accordionId">
+  <div class="card">
+    <div class="card-header" id="headingOne">
+      <h5 class="mb-0">
+        <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+          first toggle link
+        </button>
+      </h5>
+    </div>
+
+    <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
+      <div class="card-body">
+        First toggle content
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header" id="headingTwo">
+      <h5 class="mb-0">
+        <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+          Second toggle link
+        </button>
+      </h5>
+    </div>
+    <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
+      <div class="card-body">
+        Second toggle content
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header" id="headingThree">
+      <h5 class="mb-0">
+        <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+          Third toggle link
+        </button>
+      </h5>
+    </div>
+    <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordion">
+      <div class="card-body">
+        Third toggle content
+      </div>
+    </div>
+  </div>
+</div>
 
 ```
 
