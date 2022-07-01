@@ -26,6 +26,8 @@ In a perfect solution, only a few sections like :::carousel or :::quiz should be
 
 # Header block (jumbotron)
 
+[Check the demo]( https://fxpar.github.io/lua-filters/md-to-bootstrap/index.html#sectionJumbo)
+
 * **Expected syntax**: a section called jumbotron
 * **Should be converted into**: a "jumbotron" (bootstrap 4) or a header (Bootstrap 5)
   * the title
