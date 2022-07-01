@@ -64,6 +64,15 @@ You must do this to be safe
 :::
 ```
 
+Becomes
+
+```
+<div class="alert alert-danger" role="alert">
+  You must do this to be safe
+</div>
+```
+
+
 ## Cards
 
 _For now, a section needs to be added. Hopefully, a more evident syntax could be used to deduce a card structure directly in the source file without any addition._
@@ -79,6 +88,8 @@ The card section can have a nested header section and or a nested footer section
 text of the header
 :::
 
+# a title in the body
+
 Paragraph one of the body
 Paragraph two of the body
 
@@ -89,6 +100,24 @@ text of the footer
 :::
 
 ```
+
+
+```
+<div class="card text-center">
+  <div class="card-header">
+    text of the header
+  </div>
+  <div class="card-body">
+    <h5 class="card-title">a title in the body</h5>
+    <p class="card-text">Paragraph one of the body</p>
+    <p class="card-text">Paragraph two of the body</p>
+  </div>
+  <div class="card-footer text-muted">
+    text of the footer
+  </div>
+</div>
+```
+
 
 
 ## Carousel
