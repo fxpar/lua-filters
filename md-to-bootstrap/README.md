@@ -26,7 +26,7 @@ In a perfect solution, only a few sections like :::carousel or :::quiz should be
 
 # Header block (jumbotron)
 
-[Check the demo]( https://fxpar.github.io/lua-filters/md-to-bootstrap/index.html#sectionJumbo)
+[Check the demo]( https://fxpar.github.io/Pandoc-Lua-Markdown-Bootstrap/index.html#sectionJumbo)
 
 * **Expected syntax**: a section called jumbotron
 * **Should be converted into**: a "jumbotron" (bootstrap 4) or a header (Bootstrap 5)
@@ -60,6 +60,8 @@ Becomes
 * Sections called info, warning, danger... 
 * Should be rendered as alerts
 
+[Check the demo]( https://fxpar.github.io/Pandoc-Lua-Markdown-Bootstrap/index.html#sectionAlerts)
+
 ```
 ::: danger
 You must do this to be safe
@@ -82,6 +84,9 @@ _For now, a section needs to be added. Hopefully, a more evident syntax could be
 A section called card with some paragraph are turned into a card. The paragraphs are the card body.
 
 The card section can have a nested header section and or a nested footer section with some paragraphs.
+
+[Check the demo]( https://fxpar.github.io/Pandoc-Lua-Markdown-Bootstrap/index.html#sectionCards)
+
 
 ```
 ::: card
@@ -126,6 +131,9 @@ text of the footer
 A section called carousel with multiple Headers should be converted into a carousel, each header becoming a slide.
 
 The text can be cards of other component nested.
+
+[Check the demo]( https://fxpar.github.io/Pandoc-Lua-Markdown-Bootstrap/index.html#sectionCarousel)
+
 
 ```
 ::: carousel carouselId
@@ -173,6 +181,8 @@ Becomes
 
 ## Accordion
 A section called accordion with multiple Headers and text should be converted into collapsible accordion, each header becoming the toglle link name.
+
+[Check the demo]( https://fxpar.github.io/Pandoc-Lua-Markdown-Bootstrap/index.html#sectionAccordion)
 
 ```
 ::: accordion accordionId
@@ -246,6 +256,8 @@ Third toggle content
 ## Tabs
 A section called tabs with multiple Headers and text should be converted into tabs, each header becoming a tab header or pill.
 
+[Check the demo]( https://fxpar.github.io/Pandoc-Lua-Markdown-Bootstrap/index.html#sectionTabs)
+
 ```
 ::: tabs
 
@@ -255,9 +267,55 @@ Some text
 # Second tab or pill
 Some text
 
+# Third tab or pill
+Some text
+
 :::
 
 ```
+
+
+Becomes
+
+```
+
+                <p><br></p>
+                <div class="card-header">
+                    <ul class="nav nav-pills card-header-pills" style="list-style-type: none;">
+                        <li class="nav-item">
+                            <a class="nav-link  active show" data-bs-toggle="tab" href="#menu1">Linux</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="tab" href="#menu2">Mac</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="tab" href="#menu3">Windows</a>
+                        </li>
+
+                    </ul>
+                </div>
+
+                <div class="tab-content border-left border-right border-bottom p-3">
+                    <div id="menu1" class="tab-pane fade in active show">
+                        <h3 class="display-4">Support For linux users</h3>
+                        <p class="lead">Create a shell script</p>
+                       
+                    </div>
+                    <div id="menu2" class="tab-pane fade">
+                        <h3 class="display-4">Support for MAc users</h3>
+                        <p class="lead">Do it with Cmd.</p>
+                        
+                    </div>
+                    <div id="menu3" class="tab-pane fade ">
+                        <h3 class="display-4">Support for windows users</h3>
+                        <p class="lead">Do it with Ctrl</p>
+                        
+                    </div>
+
+                </div>
+```
+
+
 
 
 
