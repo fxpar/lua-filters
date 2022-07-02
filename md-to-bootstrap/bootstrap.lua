@@ -8,7 +8,10 @@
 local filter_class, normal_filter, special_filter, carousel_filter, tabs_filter, accordion_filter, card_filter, carddeck_filter, alert_filter, jumbotron_filter, quiz_filter
 local mytoc=''
 local num = 1
+local section_num = 0
 local paranum = 1
+local tabs_title_list = ''
+local tabs_h1_num =0
 
 
 -- jumbo
@@ -143,21 +146,20 @@ accordion_filter = {
 tabs_filter = {
   traverse = 'topdown',
   Header = function(el)
-    local mytitle = pandoc.utils.stringify(el)
-    el.classes = {'specialHeader'}
-	print(make_id(pandoc.Inlines (pandoc.utils.stringify(el))))
-    return el
-  end,
-  BulletList = function (el)
-    local mylist ='<ul >\n'
-    for i, item in ipairs(el.content) do
-      local first = item[1]
-      if first  then
-        mylist =  mylist .. '<li class="special-item">' .. pandoc.utils.stringify(first) ..  '</li>\n'
-      end
-    end
-    mylist =  mylist .. '</ul>\n'
-    return pandoc.RawInline('html', mylist)
+	-- we add all level 1 headings to the tabs_title_list
+    if el.level==1 then 
+	 print("TABS_TITLE_1")
+	-- we want to add the "show active" class only to the first h1
+		local show = ''
+		tabs_h1_num = tabs_h1_num + 1
+		if tabs_h1_num == 1 then show = 'show active' end
+		tabs_title_list = tabs_title_list .. '<li class="nav-item"><a class="nav-link '..show..' active" data-bs-toggle="tab" href="#menu1">'.. pandoc.utils.stringify(el) ..'</a></li>'
+			show ='' 
+		return nil
+	else 
+		return el
+	end
+	
   end
 }
 
@@ -240,15 +242,23 @@ This where we assign filters.
       filter = accordion_filter
 	elseif div.classes[1] == 'tabs' then
       filter = tabs_filter
+	  -- local blocks = div:walk(filter), false
+	  local blocks = pandoc.walk_block(div,filter).content
+	 
+	  local blocks_str = pandoc.utils.stringify(blocks)
+	  return pandoc.RawInline('html','<div class="card-header"><ul class="nav nav-pills card-header-pills" style="list-style-type: none;">'..tabs_title_list..'</ul></div><div class="tab-content border-left border-right border-bottom ">'..blocks_str..'</ul></div>')
+	
+	  
 	elseif (div.classes[1] == 'primary' or div.classes[1] == 'secondary' or div.classes[1] == 'light' or div.classes[1] == 'dark' or div.classes[1] == 'info' or div.classes[1] == 'danger' or div.classes[1] == 'warning') then
 	  div.classes = {'alert','alert-'..div.classes[1]}
       filter = alert_filter
     else
       filter = normal_filter
     end
-	if cl=='' then cl= div.classes[1] end
+	-- if cl=='' then cl= div.classes[1] end
     -- return {pandoc.RawInline('html', '<div class="'..cl..'">'), div:walk(filter),pandoc.RawInline('html', '</div>')}, false
     -- return div:walk({filter,{pandoc.RawInline('html', '\n\n')}}, false)
+	
 	return div:walk(filter), false
   end
 }
