@@ -176,6 +176,8 @@ Earn points for the exam
 
 [Pandoc repository](https://github.com/pandoc)
 
+[Pandoc repository](https://github.com/pandoc){.success}
+
 
 # EMBEDS
 

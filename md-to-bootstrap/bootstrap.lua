@@ -204,6 +204,12 @@ normal_filter = {
 	mytoc = mytoc ..'<li><a href="#title'..num..'">'..el.content[1].text..'</a></li>'
     return el
   end,
+  Link = function(el)
+	local  c ='primary'
+	if el.classes[1] then c = el.classes[1] end
+		el.classes = {'btn','btn-'..c}
+	return el
+  end,
   BulletList = function (el)
     local mylist ='<ul >\n'
     for i, item in ipairs(el.content) do
