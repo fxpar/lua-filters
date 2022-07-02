@@ -28,9 +28,16 @@ You must do this to be safe
 
 
 
-::: danger
+::: info
 
-You must do this to be safe
+This is an information
+
+:::
+
+
+::: warning
+
+[]{.bi .bi-bug} This is an information
 
 :::
 
@@ -38,10 +45,12 @@ You must do this to be safe
 
 # CARD
 
-::: card
+::: card ::::::::
 
-::: header (optional)
+::: header
+
 text of the header
+
 :::
 
 # a title in the body
@@ -49,11 +58,13 @@ text of the header
 Paragraph one of the body
 Paragraph two of the body
 
-::: footer (optional)
+::: footer
+
 text of the footer
-:::
 
 :::
+
+::::::::::::::::::
 
 
 

@@ -12,6 +12,7 @@ local paranum = 1
 
 
 -- jumbo
+-- TODO stop section to add "Display-4" from title or stop section
 jumbotron_filter = {
   traverse = 'topdown',
   Header = function(el)
@@ -44,6 +45,7 @@ alert_filter = {
 
 
 -- card
+-- TODO put a card-body div around the content
 card_filter = {
   traverse = 'topdown',
   Header = function(el)
@@ -52,20 +54,23 @@ card_filter = {
 	print(make_id(pandoc.Inlines (pandoc.utils.stringify(el))))
     return el
   end,
-  BulletList = function (el)
-    local mylist ='<ul >\n'
-    for i, item in ipairs(el.content) do
-      local first = item[1]
-      if first  then
-        mylist =  mylist .. '<li class="special-item">' .. pandoc.utils.stringify(first) ..  '</li>\n'
-      end
-    end
-    mylist =  mylist .. '</ul>\n'
-    return pandoc.RawInline('html', mylist)
+  Div = function (el)
+		print('CARD:::'..el.classes[1])
+    if el.classes[1] == 'header' then
+		-- mylist =  mylist .. '</ul>\n'
+		el.classes = {'card-header'}
+		return el
+	elseif el.classes[1] == 'footer' then
+		el.classes = {'card-footer'}
+		return el
+	else
+		return el
+	end
   end
 }
 
 -- cardddeck
+-- NOT DONE
 carddeck_filter = {
   traverse = 'topdown',
   Header = function(el)
@@ -179,6 +184,11 @@ quiz_filter = {
   end
 }
 
+
+--[[
+NORMAL FILTER
+For everything outside a special filter
+--]]
 normal_filter = {
   traverse = 'topdown',
   Meta = function(metadata)
@@ -206,13 +216,17 @@ normal_filter = {
     return pandoc.RawInline('html', mylist)
   end,
 
+--[[
+Very important part. 
+This where we assign filters.
+--]]
   Div = function (div)
-    local cl=''
-
     if div.classes[1] == 'carousel' then
       filter = carousel_filter 
 	elseif div.classes[1] == 'quiz' then
       filter = quiz_filter
+	elseif div.classes[1] == 'card' then
+      filter = card_filter
 	elseif div.classes[1] == 'jumbotron' then
 		div.classes = {'jumbotron','bg-light','rounded', 'p-2','p-md-5','mt-3'}
       filter = jumbotron_filter
@@ -220,8 +234,8 @@ normal_filter = {
       filter = accordion_filter
 	elseif div.classes[1] == 'tabs' then
       filter = tabs_filter
-	elseif div.classes[1] == ('info' or 'danger' or 'warning') then
-	  cl = 'alert alert'..div.classes[1]
+	elseif (div.classes[1] == 'primary' or div.classes[1] == 'secondary' or div.classes[1] == 'light' or div.classes[1] == 'dark' or div.classes[1] == 'info' or div.classes[1] == 'danger' or div.classes[1] == 'warning') then
+	  div.classes = {'alert','alert-'..div.classes[1]}
       filter = alert_filter
     else
       filter = normal_filter
