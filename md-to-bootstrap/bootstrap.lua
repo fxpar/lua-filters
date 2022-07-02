@@ -1,9 +1,11 @@
+--[[
+-- title:  Markdown to Bootstrap Lua filter for Pandoc
+-- author: François Parlant
+-- with lots of help from tarleb
+-- version: 0.1
+--]]
 
--- created with lots of help from tarleb
-
-
-
-local filter_class, normal_filter, special_filter, carousel_filter, tabs_filter, accordion_filter, card_filter, carddeck_filter, alert_filter, jumbotron_filter
+local filter_class, normal_filter, special_filter, carousel_filter, tabs_filter, accordion_filter, card_filter, carddeck_filter, alert_filter, jumbotron_filter, quiz_filter
 local mytoc=''
 local num = 1
 local paranum = 1
@@ -63,7 +65,7 @@ card_filter = {
   end
 }
 
--- cartddeck
+-- cardddeck
 carddeck_filter = {
   traverse = 'topdown',
   Header = function(el)
@@ -187,7 +189,7 @@ normal_filter = {
   end,
   Header = function (el)
 	local mytitle = pandoc.utils.stringify(el)
-    el.classes = {'normalHeader'}
+	if el.level == 1 then el.classes = {"display-2"} end
 	print(make_id(pandoc.Inlines (pandoc.utils.stringify(el))))
 	mytoc = mytoc ..'<li><a href="#title'..num..'">'..el.content[1].text..'</a></li>'
     return el
@@ -208,8 +210,11 @@ normal_filter = {
     local cl=''
 
     if div.classes[1] == 'carousel' then
-      filter = carousel_filter
+      filter = carousel_filter 
+	elseif div.classes[1] == 'quiz' then
+      filter = quiz_filter
 	elseif div.classes[1] == 'jumbotron' then
+		div.classes = {'jumbotron','bg-light','rounded', 'p-2','p-md-5','mt-3'}
       filter = jumbotron_filter
 	elseif div.classes[1] == 'accordion' then
       filter = accordion_filter
@@ -222,8 +227,9 @@ normal_filter = {
       filter = normal_filter
     end
 	if cl=='' then cl= div.classes[1] end
-    return {pandoc.RawInline('html', '<div class="'..cl..'">'), div:walk(filter),pandoc.RawInline('html', '</div>')}, false
+    -- return {pandoc.RawInline('html', '<div class="'..cl..'">'), div:walk(filter),pandoc.RawInline('html', '</div>')}, false
     -- return div:walk({filter,{pandoc.RawInline('html', '\n\n')}}, false)
+	return div:walk(filter), false
   end
 }
 
