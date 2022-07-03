@@ -9,7 +9,7 @@ local filter_class, normal_filter, special_filter, carousel_filter, tabs_filter,
 local mytoc=''
 local num = 1
 local section_num = 0
-local paranum = 1
+local paranum = 0
 local tabs_title_list = ''
 local tabs_h1_num =0
 local accordion_h1_num =0
@@ -24,12 +24,13 @@ jumbotron_filter = {
   Header = function(el)
     local mytitle = pandoc.utils.stringify(el)
     el.classes = {'display-4'}
-	print(make_id(pandoc.Inlines (pandoc.utils.stringify(el))))
+	-- print(make_id(pandoc.Inlines (pandoc.utils.stringify(el))))
     return el
   end,
   Para = function (para) 
+	paranum = paranum + 1
       if paranum == 1  then
-		  paranum = paranum + 1
+		  
 		  
         return pandoc.Plain(
 			{pandoc.RawInline('html', '<p class="lead">')} ..
@@ -292,10 +293,59 @@ This where we assign filters.
 --]]
   Div = function (div)
     if div.classes[1] == 'carousel' then
-		section_id = section_num + 1
+		
+	  return make_carousel(div)
+	elseif div.classes[1] == 'quiz' then
+      filter = quiz_filter
+	elseif div.classes[1] == 'card' then
+      filter = card_filter
+	elseif div.classes[1] == 'jumbotron' then
+	  return make_jumbotron(div)
+	elseif div.classes[1] == 'accordion' then
+		return make_accordion(div)
+	elseif div.classes[1] == 'tabs' then
+	  return make_tabs(div)
+	elseif (div.classes[1] == 'primary' or div.classes[1] == 'secondary' or div.classes[1] == 'light' or div.classes[1] == 'dark' or div.classes[1] == 'info' or div.classes[1] == 'danger' or div.classes[1] == 'warning') then
+	  div.classes = {'alert','alert-'..div.classes[1]}
+      filter = alert_filter
+    else
+      filter = normal_filter
+    end	
+	return div:walk(filter), false
+  end
+}
+
+Pandoc = function (doc)
+  return doc:walk(normal_filter)
+end
+
+
+function make_jumbotron(div)
+	local content = pandoc.walk_block(div,jumbotron_filter).content
+	local pre = pandoc.RawBlock('html','')
+	local post = pandoc.RawBlock('html','')
+	table.insert(content,1,pre)
+	table.insert(content, post)
+	return content
+end
+
+function make_accordion(div)
+      -- filter = accordion_filter
+	  local content = pandoc.walk_block(div,accordion_filter).content
+	  -- TODO change id of the accordion to be variable
+	  local pre = pandoc.RawBlock('html','<div class="accordion" id="accordionExample">')
+	  local post = pandoc.RawBlock('html','</div></div></div></div>')
+	  table.insert(content,1,pre)
+	  table.insert(content, post)
+	  -- reset accordion_h1_num for another tab in document
+	  accordion_h1_num = 0
+	  return content
+end
+
+function make_carousel(div)
+	section_id = section_num + 1
       filter = carousel_filter
-	  local content = pandoc.walk_block(div,filter).content
-	  -- TODO change id of the carousel to be variable
+	  local content = pandoc.walk_block(div,carousel_filter).content
 	  local pre = pandoc.RawBlock('html','<div id="carousel'..section_id..'" class="carousel slide" data-bs-ride="carousel">\n<div class="carousel-inner">')
 	  local post = pandoc.RawBlock('html',[[    </div>
   </div>
@@ -313,29 +363,13 @@ This where we assign filters.
 	  -- reset carousel_h1_num for another tab in document
 	  carousel_h1_num = 0
 	  return content
-	elseif div.classes[1] == 'quiz' then
-      filter = quiz_filter
-	elseif div.classes[1] == 'card' then
-      filter = card_filter
-	elseif div.classes[1] == 'jumbotron' then
-		div.classes = {'jumbotron','bg-light','rounded', 'p-2','p-md-5','mt-3'}
-      filter = jumbotron_filter
-	elseif div.classes[1] == 'accordion' then
-      filter = accordion_filter
-	  local content = pandoc.walk_block(div,filter).content
-	  -- TODO change id of the accordion to be variable
-	  local pre = pandoc.RawBlock('html','<div class="accordion" id="accordionExample">')
-	  local post = pandoc.RawBlock('html','</div></div></div></div>')
-	  table.insert(content,1,pre)
-	  table.insert(content, post)
-	  -- reset accordion_h1_num for another tab in document
-	  accordion_h1_num = 0
-	  return content
-	elseif div.classes[1] == 'tabs' then
-      filter = tabs_filter
+end
+
+function make_tabs(div)
+      -- filter = tabs_filter
 	  -- we need to insert the tab header 
 	  -- before we add the content
-	  local content = pandoc.walk_block(div,filter).content 
+	  local content = pandoc.walk_block(div,tabs_filter).content 
 	  local pre = pandoc.RawBlock('html','<div class="card-header"><ul class="nav nav-pills card-header-pills" style="list-style-type: none;">'..tabs_title_list..'</ul></div><div class="tab-content border-left border-right border-bottom ">')
 	  -- we close last menu and content
 	  local post = pandoc.RawBlock('html','</div></div>')
@@ -344,25 +378,8 @@ This where we assign filters.
 	  -- reset tabs_h1_num for another tab in document
 	  tabs_h1_num = 0
 	  return content
-	elseif (div.classes[1] == 'primary' or div.classes[1] == 'secondary' or div.classes[1] == 'light' or div.classes[1] == 'dark' or div.classes[1] == 'info' or div.classes[1] == 'danger' or div.classes[1] == 'warning') then
-	  div.classes = {'alert','alert-'..div.classes[1]}
-      filter = alert_filter
-    else
-      filter = normal_filter
-    end
-	-- if cl=='' then cl= div.classes[1] end
-    -- return {pandoc.RawInline('html', '<div class="'..cl..'">'), div:walk(filter),pandoc.RawInline('html', '</div>')}, false
-    -- return div:walk({filter,{pandoc.RawInline('html', '\n\n')}}, false)
-	
-	return div:walk(filter), false
-  end
-}
 
-Pandoc = function (doc)
-  return doc:walk(normal_filter)
 end
-
-
 
 
 function make_id (inlines, via)
@@ -380,6 +397,11 @@ function sanitize_string(source)
 end
 
 
-
+local function urlencode (str)
+   str = string.gsub (str, "([^0-9a-zA-Z !'()*._~-])", -- locale independent
+      function (c) return string.format ("%%%02X", string.byte(c)) end)
+   str = string.gsub (str, " ", "+")
+   return str
+end
 
 
