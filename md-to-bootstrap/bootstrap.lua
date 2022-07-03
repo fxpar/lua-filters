@@ -12,6 +12,7 @@ local section_num = 0
 local paranum = 1
 local tabs_title_list = ''
 local tabs_h1_num =0
+local tabs_h2_num =0
 
 
 -- jumbo
@@ -153,12 +154,35 @@ tabs_filter = {
 		local show = ''
 		tabs_h1_num = tabs_h1_num + 1
 		if tabs_h1_num == 1 then show = 'show active' end
-		tabs_title_list = tabs_title_list .. '<li class="nav-item"><a class="nav-link '..show..' active" data-bs-toggle="tab" href="#menu1">'.. pandoc.utils.stringify(el) ..'</a></li>'
+		tabs_title_list = tabs_title_list .. '<li class="nav-item"><a class="nav-link '..show..'" data-bs-toggle="tab" href="#menu'..tabs_h1_num..'">'.. pandoc.utils.stringify(el) ..'</a></li>'
 			show ='' 
 		return nil
-	else 
+	
+	-- if level 2 we start card
+		-- first level two, we open content, we set active
+		
+	elseif el.level == 2 then
+		local active = ''
+		local pre =''
+		tabs_h2_num = tabs_h2_num + 1
+		if tabs_h2_num == 1 then
+			active = ''
+			-- we close the card header and we add active
+			pre = pandoc.RawBlock('html','</ul></div> <div class="tab-content border-left border-right border-bottom "><div id="menu'..tabs_h2_num..'" class="tab-pane fade in active show border p-3">')
+		else
+			-- we close previous menu and we start the menu
+			pre = pandoc.RawBlock('html','</div><div id="menu'..tabs_h2_num..'" class="tab-pane fade in border p-3">')
+		end
+		local post =pandoc.RawBlock('html','</div>')
+		local content = el.content
+		table.insert(content,1,pre)
+		table.insert(content, post)
+		return content
+	else
 		return el
 	end
+		
+
 	
   end
 }
@@ -243,10 +267,14 @@ This where we assign filters.
 	elseif div.classes[1] == 'tabs' then
       filter = tabs_filter
 	  -- local blocks = div:walk(filter), false
-	  local blocks = pandoc.walk_block(div,filter).content
-	 
-	  local blocks_str = pandoc.utils.stringify(blocks)
-	  return pandoc.RawInline('html','<div class="card-header"><ul class="nav nav-pills card-header-pills" style="list-style-type: none;">'..tabs_title_list..'</ul></div><div class="tab-content border-left border-right border-bottom ">'..blocks_str..'</ul></div>')
+	  local content = pandoc.walk_block(div,filter).content 
+	  local pre = pandoc.RawBlock('html','<div class="card-header"><ul class="nav nav-pills card-header-pills" style="list-style-type: none;">'..tabs_title_list..'</ul></div><div class="tab-content border-left border-right border-bottom ">')
+	  -- local post = pandoc.RawBlock('html','</ul></div> <div class="tab-content border-left border-right border-bottom ">')
+	  local post = pandoc.RawBlock('html','</div>')
+	  table.insert(content,1,pre)
+	  table.insert(content, post)
+
+	  return content
 	
 	  
 	elseif (div.classes[1] == 'primary' or div.classes[1] == 'secondary' or div.classes[1] == 'light' or div.classes[1] == 'dark' or div.classes[1] == 'info' or div.classes[1] == 'danger' or div.classes[1] == 'warning') then
