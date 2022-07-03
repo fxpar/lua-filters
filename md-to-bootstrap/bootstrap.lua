@@ -13,6 +13,7 @@ local paranum = 1
 local tabs_title_list = ''
 local tabs_h1_num =0
 local accordion_h1_num =0
+local carousel_h1_num =0
 
 
 
@@ -98,27 +99,45 @@ carddeck_filter = {
 }
 
 
+
+
 -- carousel
 carousel_filter = {
   traverse = 'topdown',
   Header = function(el)
-    local mytitle = pandoc.utils.stringify(el)
-    el.classes = {'specialHeader'}
-	print(make_id(pandoc.Inlines (pandoc.utils.stringify(el))))
-    return el
-  end,
-  BulletList = function (el)
-    local mylist ='<ul >\n'
-    for i, item in ipairs(el.content) do
-      local first = item[1]
-      if first  then
-        mylist =  mylist .. '<li class="special-item">' .. pandoc.utils.stringify(first) ..  '</li>\n'
-      end
-    end
-    mylist =  mylist .. '</ul>\n'
-    return pandoc.RawInline('html', mylist)
+    if el.level==1 then 
+		local active ='active'
+		local before =''
+		carousel_h1_num = carousel_h1_num + 1
+		if carousel_h1_num == 1 then 
+			active = 'active' 
+			before = ''
+		else
+			active=''
+			before ='</div>'
+		end
+		-- TODO add the num of the carousel in case
+		-- there are more than one in the document
+		local pre =pandoc.RawBlock('html',before..[[
+			<div class="carousel-item ]]..active..[[">
+		]])
+		local post =pandoc.RawBlock('html','')
+		local content = el.content
+		table.insert(content,1,pre)
+		table.insert(content, post)
+		return content
+	else
+		return el
+	end
+	
   end
 }
+
+
+
+
+
+
 
 -- Accordion
 accordion_filter = {
@@ -273,7 +292,27 @@ This where we assign filters.
 --]]
   Div = function (div)
     if div.classes[1] == 'carousel' then
-      filter = carousel_filter 
+		section_id = section_num + 1
+      filter = carousel_filter
+	  local content = pandoc.walk_block(div,filter).content
+	  -- TODO change id of the carousel to be variable
+	  local pre = pandoc.RawBlock('html','<div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">\n<div class="carousel-inner">')
+	  local post = pandoc.RawBlock('html',[[    </div>
+  </div>
+  <button class="carousel-control-prev" type="button" data-bs-target="#carousel]]..section_id..[[" data-bs-slide="prev">
+    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Previous</span>
+  </button>
+  <button class="carousel-control-next" type="button" data-bs-target="#carousel]]..section_id..[[" data-bs-slide="next">
+    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Next</span>
+  </button>
+</div>]])
+	  table.insert(content,1,pre)
+	  table.insert(content, post)
+	  -- reset carousel_h1_num for another tab in document
+	  carousel_h1_num = 0
+	  return content
 	elseif div.classes[1] == 'quiz' then
       filter = quiz_filter
 	elseif div.classes[1] == 'card' then
