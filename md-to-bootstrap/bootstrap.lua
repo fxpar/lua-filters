@@ -147,36 +147,35 @@ accordion_filter = {
 tabs_filter = {
   traverse = 'topdown',
   Header = function(el)
-	-- we add all level 1 headings to the tabs_title_list
+	-- we need to process twice the level 1 headings
+	-- once to create the card header
+	-- once to process the content
     if el.level==1 then 
 	 print("TABS_TITLE_1")
-	-- we want to add the "show active" class only to the first h1
+	 -- create the tab header
 		local show = ''
+		-- we want to add the "show active" class only to the first h1
 		tabs_h1_num = tabs_h1_num + 1
 		if tabs_h1_num == 1 then show = 'show active' end
 		tabs_title_list = tabs_title_list .. '<li class="nav-item"><a class="nav-link '..show..'" data-bs-toggle="tab" href="#menu'..tabs_h1_num..'">'.. pandoc.utils.stringify(el) ..'</a></li>'
 			show ='' 
-		return nil
-	
-	-- if level 2 we start card
-		-- first level two, we open content, we set active
 		
-	elseif el.level == 2 then
+	-- create the tab content
 		local active = ''
 		local pre =''
 		tabs_h2_num = tabs_h2_num + 1
 		if tabs_h2_num == 1 then
 			active = ''
-			-- we close the card header and we add active
+			-- we close the tab header and we add active
 			pre = pandoc.RawBlock('html','</ul></div> <div class="tab-content border-left border-right border-bottom "><div id="menu'..tabs_h2_num..'" class="tab-pane fade in active show border p-3">')
 		else
 			-- we close previous menu and we start the menu
 			pre = pandoc.RawBlock('html','</div><div id="menu'..tabs_h2_num..'" class="tab-pane fade in border p-3">')
 		end
-		local post =pandoc.RawBlock('html','</div>')
+		-- local post =pandoc.RawBlock('html','</div>')
 		local content = el.content
 		table.insert(content,1,pre)
-		table.insert(content, post)
+		-- table.insert(content, post)
 		return content
 	else
 		return el
