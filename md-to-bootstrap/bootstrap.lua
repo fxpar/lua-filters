@@ -127,7 +127,7 @@ accordion_filter = {
     if el.level==1 then 
 		local show ='show'
 		local before =''
-		accordion_h1_num = accordion_h1_num +1
+		accordion_h1_num = accordion_h1_num + 1
 		if accordion_h1_num == 1 then 
 			show = 'show' 
 			before = ''
@@ -183,11 +183,11 @@ tabs_filter = {
 	-- create the tab content
 		local active = ''
 		local pre =''
-		tabs_h1_num = tabs_h1_num + 1
+
 		if tabs_h1_num == 1 then
 			active = ''
 			-- we close the tab header and we add active
-			pre = pandoc.RawBlock('html','</ul></div> \n\n<div class="tab-content border-left border-right border-bottom ">\n\t<div id="menu'..tabs_h2_num..'" class="tab-pane fade in active show border p-3"><h1>')
+			pre = pandoc.RawBlock('html','</ul></div> \n\n<div class="tab-content border-left border-right border-bottom ">\n\t<div id="menu'..tabs_h1_num..'" class="tab-pane fade in active show border p-3"><h1>')
 		else
 			-- we close previous menu and we start the menu
 			pre = pandoc.RawBlock('html','</div><div id="menu'..tabs_h1_num..'" class="tab-pane fade in border p-3"><h1>')
