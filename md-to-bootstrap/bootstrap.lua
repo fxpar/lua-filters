@@ -12,7 +12,8 @@ local section_num = 0
 local paranum = 1
 local tabs_title_list = ''
 local tabs_h1_num =0
-local tabs_h2_num =0
+local accordion_h1_num =0
+
 
 
 -- jumbo
@@ -123,21 +124,40 @@ carousel_filter = {
 accordion_filter = {
   traverse = 'topdown',
   Header = function(el)
-    local mytitle = pandoc.utils.stringify(el)
-    el.classes = {'specialHeader'}
-	print(make_id(pandoc.Inlines (pandoc.utils.stringify(el))))
-    return el
-  end,
-  BulletList = function (el)
-    local mylist ='<ul >\n'
-    for i, item in ipairs(el.content) do
-      local first = item[1]
-      if first  then
-        mylist =  mylist .. '<li class="special-item">' .. pandoc.utils.stringify(first) ..  '</li>\n'
-      end
-    end
-    mylist =  mylist .. '</ul>\n'
-    return pandoc.RawInline('html', mylist)
+    if el.level==1 then 
+		local show ='show'
+		local before =''
+		accordion_h1_num = accordion_h1_num +1
+		if accordion_h1_num == 1 then 
+			show = 'show' 
+			before = ''
+		else
+			show=''
+			before ='</div></div></div>'
+		end
+		-- TODO add the num of the accordion in case
+		-- there are more than one in the document
+		local pre =pandoc.RawBlock('html',before..[[
+	
+  <div class="accordion-item">
+    <h2 class="accordion-header" id="heading]]..accordion_h1_num..[[">
+      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse]]..accordion_h1_num..[[" aria-expanded="true" aria-controls="collapse]]..accordion_h1_num..[[">
+        ]]..pandoc.utils.stringify(el) ..[[
+      </button>
+    </h2>
+    <div id="collapse]]..accordion_h1_num..[[" class="accordion-collapse collapse ]].. show..[[" aria-labelledby="heading]]..accordion_h1_num..[[" data-bs-parent="#accordionExample">
+      <div class="accordion-body">
+	
+		]])
+		local post =pandoc.RawBlock('html','')
+		local content = el.content
+		table.insert(content,1,pre)
+		table.insert(content, post)
+		return content
+	else
+		return el
+	end
+	
   end
 }
 
@@ -163,14 +183,14 @@ tabs_filter = {
 	-- create the tab content
 		local active = ''
 		local pre =''
-		tabs_h2_num = tabs_h2_num + 1
-		if tabs_h2_num == 1 then
+		tabs_h1_num = tabs_h1_num + 1
+		if tabs_h1_num == 1 then
 			active = ''
 			-- we close the tab header and we add active
 			pre = pandoc.RawBlock('html','</ul></div> \n\n<div class="tab-content border-left border-right border-bottom ">\n\t<div id="menu'..tabs_h2_num..'" class="tab-pane fade in active show border p-3"><h1>')
 		else
 			-- we close previous menu and we start the menu
-			pre = pandoc.RawBlock('html','</div><div id="menu'..tabs_h2_num..'" class="tab-pane fade in border p-3"><h1>')
+			pre = pandoc.RawBlock('html','</div><div id="menu'..tabs_h1_num..'" class="tab-pane fade in border p-3"><h1>')
 		end
 		local post =pandoc.RawBlock('html','</h1>')
 		local content = el.content
@@ -264,10 +284,13 @@ This where we assign filters.
 	elseif div.classes[1] == 'accordion' then
       filter = accordion_filter
 	  local content = pandoc.walk_block(div,filter).content
+	  -- TODO change id of the accordion to be variable
 	  local pre = pandoc.RawBlock('html','<div class="accordion" id="accordionExample">')
-	  local post = pandoc.RawBlock('html','</div>')
+	  local post = pandoc.RawBlock('html','</div></div></div></div>')
 	  table.insert(content,1,pre)
 	  table.insert(content, post)
+	  -- reset accordion_h1_num for another tab in document
+	  accordion_h1_num = 0
 	  return content
 	elseif div.classes[1] == 'tabs' then
       filter = tabs_filter
@@ -279,6 +302,8 @@ This where we assign filters.
 	  local post = pandoc.RawBlock('html','</div></div>')
 	  table.insert(content,1,pre)
 	  table.insert(content, post)
+	  -- reset tabs_h1_num for another tab in document
+	  tabs_h1_num = 0
 	  return content
 	elseif (div.classes[1] == 'primary' or div.classes[1] == 'secondary' or div.classes[1] == 'light' or div.classes[1] == 'dark' or div.classes[1] == 'info' or div.classes[1] == 'danger' or div.classes[1] == 'warning') then
 	  div.classes = {'alert','alert-'..div.classes[1]}
