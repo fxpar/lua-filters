@@ -119,9 +119,9 @@ carousel_filter = {
 		-- TODO add the num of the carousel in case
 		-- there are more than one in the document
 		local pre =pandoc.RawBlock('html',before..[[
-			<div class="carousel-item ]]..active..[[">
+			<div class="carousel-item ]]..active..[["><h2>
 		]])
-		local post =pandoc.RawBlock('html','')
+		local post =pandoc.RawBlock('html','</h2>')
 		local content = el.content
 		table.insert(content,1,pre)
 		table.insert(content, post)
@@ -296,7 +296,7 @@ This where we assign filters.
       filter = carousel_filter
 	  local content = pandoc.walk_block(div,filter).content
 	  -- TODO change id of the carousel to be variable
-	  local pre = pandoc.RawBlock('html','<div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">\n<div class="carousel-inner">')
+	  local pre = pandoc.RawBlock('html','<div id="carousel'..section_id..'" class="carousel slide" data-bs-ride="carousel">\n<div class="carousel-inner">')
 	  local post = pandoc.RawBlock('html',[[    </div>
   </div>
   <button class="carousel-control-prev" type="button" data-bs-target="#carousel]]..section_id..[[" data-bs-slide="prev">
